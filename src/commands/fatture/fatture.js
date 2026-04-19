@@ -91,10 +91,15 @@ module.exports = {
     const chFatture = config.canali.fatture;
     if (chFatture) {
       const canale = await interaction.client.channels.fetch(chFatture).catch(() => null);
-      if (canale) await canale.send({ embeds: [embed] });
+      if (canale) {
+        await canale.send({ embeds: [embed] });
+        await interaction.reply({ content: `💰 Fattura #${fatturaId} registrata con successo!`, ephemeral: true });
+      } else {
+        await interaction.reply({ embeds: [embed] });
+      }
+    } else {
+      await interaction.reply({ embeds: [embed] });
     }
-
-    await interaction.reply({ embeds: [embed] });
     await logBotLog(interaction.client, '💰 Fattura Registrata',
       `**#${fatturaId}** — ${interaction.user.tag} — ${formatMoney(importo)} — Cliente: ${cliente}`
     );
