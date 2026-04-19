@@ -90,8 +90,14 @@ module.exports = {
     console.log(`[SCHED] interaction.reply() ephemeral — schedamento #${result.lastInsertRowid}`);
     await interaction.reply({ content: `📁 Schedamento #${result.lastInsertRowid} registrato con successo!`, ephemeral: true });
 
-    await logBotLog(interaction.client, '📁 Nuovo Schedamento',
-      `**${nome} ${cognome}** — Stato: ${stato} — Da: ${interaction.user.tag}`
-    );
+    // Salta logBotLog se botLog e schedamenti puntano allo stesso canale
+    // (evita un secondo embed nello stesso canale)
+    if (config.canali.botLog !== config.canali.schedamenti) {
+      await logBotLog(interaction.client, '📁 Nuovo Schedamento',
+        `**${nome} ${cognome}** — Stato: ${stato} — Da: ${interaction.user.tag}`
+      );
+    } else {
+      console.log('[SCHED] logBotLog saltato — CH_BOT_LOG == CH_SCHEDAMENTI');
+    }
   },
 };
