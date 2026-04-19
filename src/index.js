@@ -29,3 +29,5 @@ loadEvents(client);
 avviaStipendioSettimanale(client);
 
 client.login(config.token);
+
+const db = require('./database');
