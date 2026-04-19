@@ -1,19 +1,25 @@
 const { handleComponent } = require('../handlers/componentHandler');
+const db = require('../database/index');
 
-// Guard anti-duplicato: se lo stesso interactionId arriva due volte (es. due
-// processi con lo stesso token), blocca il secondo prima che esegua qualsiasi send.
-const processed = new Set();
+// Deduplication su SQLite: funziona anche tra processi separati sullo stesso DB.
+// INSERT OR IGNORE restituisce changes=0 se l'ID esiste già → secondo processo bloccato.
+function claimInteraction(id) {
+  const ts = Date.now();
+  const result = db.prepare(
+    'INSERT OR IGNORE INTO interactions_processed (interaction_id, ts) VALUES (?, ?)'
+  ).run(id, ts);
+  // Pulisce entry più vecchie di 30 secondi
+  db.prepare('DELETE FROM interactions_processed WHERE ts < ?').run(ts - 30_000);
+  return result.changes > 0; // true = questo processo l'ha "vinta"
+}
 
 module.exports = {
   name: 'interactionCreate',
   async execute(interaction) {
-    if (processed.has(interaction.id)) {
-      console.warn(`[GUARD] Interaction duplicata bloccata: ${interaction.id}`);
+    if (!claimInteraction(interaction.id)) {
+      console.warn(`[GUARD] Interaction duplicata bloccata (DB): ${interaction.id}`);
       return;
     }
-    processed.add(interaction.id);
-    // Pulisce le entry dopo 10 secondi per non accumulare memoria
-    setTimeout(() => processed.delete(interaction.id), 10_000);
 
     if (interaction.isChatInputCommand()) {
       const command = interaction.client.commands.get(interaction.commandName);

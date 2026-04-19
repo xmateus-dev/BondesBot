@@ -110,6 +110,10 @@ function initDatabase() {
       membro_id TEXT,
       data TEXT NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS interactions_processed (
+      interaction_id TEXT PRIMARY KEY,
+      ts INTEGER NOT NULL
+    );
   `;
   db.exec(sql);
 
