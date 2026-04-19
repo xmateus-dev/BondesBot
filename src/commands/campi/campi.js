@@ -59,10 +59,15 @@ module.exports = {
     const chCampi = config.canali.esitoCampi;
     if (chCampi) {
       const canale = await interaction.client.channels.fetch(chCampi).catch(() => null);
-      if (canale) await canale.send({ embeds: [embed] });
+      if (canale) {
+        await canale.send({ embeds: [embed] });
+        await interaction.reply({ content: `${esitoEmoji} Esito campo registrato con successo!`, ephemeral: true });
+      } else {
+        await interaction.reply({ embeds: [embed] });
+      }
+    } else {
+      await interaction.reply({ embeds: [embed] });
     }
-
-    await interaction.reply({ embeds: [embed] });
     await logBotLog(interaction.client, `${esitoEmoji} Campo Registrato`,
       `**Campo:** ${campo} | **Attività:** ${attivita} | **Esito:** ${esito} | **Da:** ${interaction.user.tag}`
     );
