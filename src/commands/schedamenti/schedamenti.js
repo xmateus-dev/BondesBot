@@ -2,7 +2,6 @@ const { SlashCommandBuilder } = require('discord.js');
 const db = require('../../database/index');
 const { embedBase, embedErrore } = require('../../utils/embeds');
 const { isInformativa } = require('../../utils/permissions');
-const { logBotLog } = require('../../utils/logger');
 const { formatDate } = require('../../utils/formatters');
 const config = require('../../config/config');
 
@@ -72,8 +71,5 @@ module.exports = {
       );
 
     await interaction.reply({ embeds: [embed] });
-    await logBotLog(interaction.client, '📁 Nuovo Schedamento',
-      `**${nome} ${cognome}** — Stato: ${stato} — Da: ${interaction.user.tag}`
-    );
   },
 };

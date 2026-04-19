@@ -2,7 +2,6 @@ const { SlashCommandBuilder } = require('discord.js');
 const db = require('../../database/index');
 const { embedBase, embedErrore } = require('../../utils/embeds');
 const { checkPermission, LIVELLI } = require('../../utils/permissions');
-const { logBotLog } = require('../../utils/logger');
 const config = require('../../config/config');
 
 module.exports = {
@@ -34,8 +33,5 @@ module.exports = {
       );
 
     await interaction.reply({ embeds: [embed] });
-    await logBotLog(interaction.client, '🏖️ Assenza Registrata',
-      `**Membro:** ${interaction.user.tag} | **Dal:** ${dal} | **Al:** ${al}`
-    );
   },
 };

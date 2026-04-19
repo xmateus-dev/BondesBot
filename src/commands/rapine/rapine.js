@@ -2,7 +2,6 @@ const { SlashCommandBuilder } = require('discord.js');
 const db = require('../../database/index');
 const { embedBase, embedErrore } = require('../../utils/embeds');
 const { isBraccio } = require('../../utils/permissions');
-const { logBotLog } = require('../../utils/logger');
 const { formatDate } = require('../../utils/formatters');
 const config = require('../../config/config');
 
@@ -59,8 +58,5 @@ module.exports = {
       );
 
     await interaction.reply({ embeds: [embed] });
-    await logBotLog(interaction.client, `${esitoEmoji} Rapina Registrata`,
-      `**Civico:** ${civico} | **Tipo:** ${tipo} | **Esito:** ${esito} | **Da:** ${interaction.user.tag}`
-    );
   },
 };

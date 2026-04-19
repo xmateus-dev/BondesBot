@@ -2,7 +2,6 @@ const { SlashCommandBuilder } = require('discord.js');
 const db = require('../../database/index');
 const { embedBase, embedErrore } = require('../../utils/embeds');
 const { checkPermission, LIVELLI, isAlto, isInformativa } = require('../../utils/permissions');
-const { logBotLog } = require('../../utils/logger');
 const { formatMoney, formatDate } = require('../../utils/formatters');
 const config = require('../../config/config');
 
@@ -88,8 +87,5 @@ module.exports = {
       );
 
     await interaction.reply({ embeds: [embed] });
-    await logBotLog(interaction.client, '💰 Fattura Registrata',
-      `**#${fatturaId}** — ${interaction.user.tag} — ${formatMoney(importo)} — Cliente: ${cliente}`
-    );
   },
 };
