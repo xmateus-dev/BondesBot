@@ -22,8 +22,10 @@ module.exports = {
     .addStringOption(o => o.setName('note').setDescription('Note facoltative').setRequired(false)),
 
   async execute(interaction) {
+    await interaction.deferReply({ ephemeral: true });
+
     if (!isBraccio(interaction.member)) {
-      return interaction.reply({ embeds: [embedErrore('Solo il Braccio Armato può registrare esiti rapina.')], ephemeral: true });
+      return interaction.editReply({ embeds: [embedErrore('Solo il Braccio Armato può registrare esiti rapina.')] });
     }
 
     const civico = interaction.options.getString('civico');
@@ -55,9 +57,13 @@ module.exports = {
       const canale = await interaction.client.channels.fetch(config.canali.esitoRapine).catch(() => null);
       if (canale) await canale.send({ embeds: [embed] });
     }
-    await interaction.reply({ content: `${esitoEmoji} Esito rapina registrato con successo!`, ephemeral: true });
-    await logBotLog(interaction.client, `${esitoEmoji} Rapina Registrata`,
-      `**Civico:** ${civico} | **Tipo:** ${tipo} | **Esito:** ${esito} | **Da:** ${interaction.user.tag}`
-    );
+
+    await interaction.deleteReply();
+
+    if (config.canali.botLog !== config.canali.esitoRapine) {
+      await logBotLog(interaction.client, `${esitoEmoji} Rapina Registrata`,
+        `**Civico:** ${civico} | **Tipo:** ${tipo} | **Esito:** ${esito} | **Da:** ${interaction.user.tag}`
+      );
+    }
   },
 };

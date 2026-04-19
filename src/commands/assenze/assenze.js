@@ -14,8 +14,10 @@ module.exports = {
     .addStringOption(o => o.setName('al').setDescription('Data fine (es. 25/04/2026)').setRequired(true)),
 
   async execute(interaction) {
+    await interaction.deferReply({ ephemeral: true });
+
     if (!checkPermission(interaction.member, LIVELLI.MEMBRO)) {
-      return interaction.reply({ embeds: [embedErrore('Devi essere un membro della fazione per registrare un\'assenza.')], ephemeral: true });
+      return interaction.editReply({ embeds: [embedErrore('Devi essere un membro della fazione per registrare un\'assenza.')] });
     }
 
     const motivo = interaction.options.getString('motivo');
@@ -37,9 +39,13 @@ module.exports = {
       const canale = await interaction.client.channels.fetch(config.canali.assenze).catch(() => null);
       if (canale) await canale.send({ embeds: [embed] });
     }
-    await interaction.reply({ content: '🏖️ Assenza registrata con successo!', ephemeral: true });
-    await logBotLog(interaction.client, '🏖️ Assenza Registrata',
-      `**Membro:** ${interaction.user.tag} | **Dal:** ${dal} | **Al:** ${al}`
-    );
+
+    await interaction.deleteReply();
+
+    if (config.canali.botLog !== config.canali.assenze) {
+      await logBotLog(interaction.client, '🏖️ Assenza Registrata',
+        `**Membro:** ${interaction.user.tag} | **Dal:** ${dal} | **Al:** ${al}`
+      );
+    }
   },
 };

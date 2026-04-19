@@ -51,13 +51,15 @@ module.exports = {
     .addStringOption(o => o.setName('note').setDescription('Note facoltative').setRequired(false)),
 
   async execute(interaction) {
+    await interaction.deferReply({ ephemeral: true });
+
     const autorizzato =
       checkPermission(interaction.member, LIVELLI.RECLUTA) ||
       isInformativa(interaction.member) ||
       isAlto(interaction.member);
 
     if (!autorizzato) {
-      return interaction.reply({ embeds: [embedErrore('Non hai i permessi per emettere fatture.')], ephemeral: true });
+      return interaction.editReply({ embeds: [embedErrore('Non hai i permessi per emettere fatture.')] });
     }
 
     const cliente = interaction.options.getString('cliente');
@@ -92,9 +94,13 @@ module.exports = {
       const canale = await interaction.client.channels.fetch(config.canali.fatture).catch(() => null);
       if (canale) await canale.send({ embeds: [embed] });
     }
-    await interaction.reply({ content: `💰 Fattura #${fatturaId} registrata con successo!`, ephemeral: true });
-    await logBotLog(interaction.client, '💰 Fattura Registrata',
-      `**#${fatturaId}** — ${interaction.user.tag} — ${formatMoney(importo)} — Cliente: ${cliente}`
-    );
+
+    await interaction.deleteReply();
+
+    if (config.canali.botLog !== config.canali.fatture) {
+      await logBotLog(interaction.client, '💰 Fattura Registrata',
+        `**#${fatturaId}** — ${interaction.user.tag} — ${formatMoney(importo)} — Cliente: ${cliente}`
+      );
+    }
   },
 };
