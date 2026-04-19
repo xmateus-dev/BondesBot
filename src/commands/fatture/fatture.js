@@ -36,7 +36,6 @@ function aggiornaResoconto(membroId, importo) {
   }
 
   db.prepare('UPDATE economia SET saldo_totale = saldo_totale + ? WHERE id = 1').run(fazione);
-
   db.prepare('INSERT INTO stipendi_log (membro_id, importo, tipo, motivo, staff_id, data) VALUES (?, ?, ?, ?, ?, ?)')
     .run(membroId, stipendio, 'aggiunta', 'Fattura emessa', membroId, now);
 }
@@ -51,15 +50,13 @@ module.exports = {
     .addStringOption(o => o.setName('note').setDescription('Note facoltative').setRequired(false)),
 
   async execute(interaction) {
-    await interaction.deferReply({ ephemeral: true });
-
     const autorizzato =
       checkPermission(interaction.member, LIVELLI.RECLUTA) ||
       isInformativa(interaction.member) ||
       isAlto(interaction.member);
 
     if (!autorizzato) {
-      return interaction.editReply({ embeds: [embedErrore('Non hai i permessi per emettere fatture.')] });
+      return interaction.reply({ embeds: [embedErrore('Non hai i permessi per emettere fatture.')], ephemeral: true });
     }
 
     const cliente = interaction.options.getString('cliente');
@@ -90,17 +87,9 @@ module.exports = {
         { name: 'Data', value: formatDate(data), inline: false }
       );
 
-    if (config.canali.fatture) {
-      const canale = await interaction.client.channels.fetch(config.canali.fatture).catch(() => null);
-      if (canale) await canale.send({ embeds: [embed] });
-    }
-
-    await interaction.deleteReply();
-
-    if (config.canali.botLog !== config.canali.fatture) {
-      await logBotLog(interaction.client, '💰 Fattura Registrata',
-        `**#${fatturaId}** — ${interaction.user.tag} — ${formatMoney(importo)} — Cliente: ${cliente}`
-      );
-    }
+    await interaction.reply({ embeds: [embed] });
+    await logBotLog(interaction.client, '💰 Fattura Registrata',
+      `**#${fatturaId}** — ${interaction.user.tag} — ${formatMoney(importo)} — Cliente: ${cliente}`
+    );
   },
 };

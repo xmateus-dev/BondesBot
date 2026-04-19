@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const db = require('../../database/index');
 const { embedBase, embedErrore } = require('../../utils/embeds');
-const { checkPermission, LIVELLI, isBraccio } = require('../../utils/permissions');
+const { isBraccio } = require('../../utils/permissions');
 const { logBotLog } = require('../../utils/logger');
 const { formatDate } = require('../../utils/formatters');
 const config = require('../../config/config');
@@ -33,10 +33,8 @@ module.exports = {
     .addStringOption(o => o.setName('note').setDescription('Note facoltative').setRequired(false)),
 
   async execute(interaction) {
-    await interaction.deferReply({ ephemeral: true });
-
     if (!isBraccio(interaction.member)) {
-      return interaction.editReply({ embeds: [embedErrore('Solo il Braccio Armato può registrare esiti campo.')] });
+      return interaction.reply({ embeds: [embedErrore('Solo il Braccio Armato può registrare esiti campo.')], ephemeral: true });
     }
 
     const campo = interaction.options.getString('campo');
@@ -65,17 +63,9 @@ module.exports = {
         { name: '👤 Compilato da', value: `${interaction.member}`, inline: true }
       );
 
-    if (config.canali.esitoCampi) {
-      const canale = await interaction.client.channels.fetch(config.canali.esitoCampi).catch(() => null);
-      if (canale) await canale.send({ embeds: [embed] });
-    }
-
-    await interaction.deleteReply();
-
-    if (config.canali.botLog !== config.canali.esitoCampi) {
-      await logBotLog(interaction.client, `${esitoEmoji} Campo Registrato`,
-        `**Campo:** ${campo} | **Attività:** ${attivita} | **Esito:** ${esito} | **Da:** ${interaction.user.tag}`
-      );
-    }
+    await interaction.reply({ embeds: [embed] });
+    await logBotLog(interaction.client, `${esitoEmoji} Campo Registrato`,
+      `**Campo:** ${campo} | **Attività:** ${attivita} | **Esito:** ${esito} | **Da:** ${interaction.user.tag}`
+    );
   },
 };

@@ -35,11 +35,8 @@ module.exports = {
     .addStringOption(o => o.setName('note').setDescription('Note aggiuntive (facoltativo)').setRequired(false)),
 
   async execute(interaction) {
-    // Defer subito in modo efimero: nessuna traccia pubblica del comando
-    await interaction.deferReply({ ephemeral: true });
-
     if (!isInformativa(interaction.member)) {
-      return interaction.editReply({ embeds: [embedErrore('Solo l\'Informativa può gestire gli schedamenti.')] });
+      return interaction.reply({ embeds: [embedErrore('Solo l\'Informativa può gestire gli schedamenti.')], ephemeral: true });
     }
 
     const nome = interaction.options.getString('nome');
@@ -74,22 +71,9 @@ module.exports = {
         { name: '👤 Schedato da', value: `${interaction.member}`, inline: true }
       );
 
-    // Invia l'embed pubblico solo tramite channel.send — mai tramite reply/followUp
-    if (config.canali.schedamenti) {
-      const canale = await interaction.client.channels.fetch(config.canali.schedamenti).catch(() => null);
-      if (canale) {
-        console.log(`[SCHED] canale.send — PID:${process.pid} interaction:${interaction.id} schedamento:#${result.lastInsertRowid}`);
-        await canale.send({ embeds: [embed] });
-      }
-    }
-
-    // Cancella il defer efimero: nessun messaggio visibile nel canale
-    await interaction.deleteReply();
-
-    if (config.canali.botLog !== config.canali.schedamenti) {
-      await logBotLog(interaction.client, '📁 Nuovo Schedamento',
-        `**${nome} ${cognome}** — Stato: ${stato} — Da: ${interaction.user.tag}`
-      );
-    }
+    await interaction.reply({ embeds: [embed] });
+    await logBotLog(interaction.client, '📁 Nuovo Schedamento',
+      `**${nome} ${cognome}** — Stato: ${stato} — Da: ${interaction.user.tag}`
+    );
   },
 };
