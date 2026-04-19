@@ -35,6 +35,8 @@ module.exports = {
     .addStringOption(o => o.setName('note').setDescription('Note aggiuntive (facoltativo)').setRequired(false)),
 
   async execute(interaction) {
+    console.log(`[SCHED] execute() chiamato — interaction ${interaction.id} — utente ${interaction.user.tag}`);
+
     if (!isInformativa(interaction.member)) {
       return interaction.reply({ embeds: [embedErrore('Solo l\'Informativa può gestire gli schedamenti.')], ephemeral: true });
     }
@@ -71,11 +73,23 @@ module.exports = {
         { name: '👤 Schedato da', value: `${interaction.member}`, inline: true }
       );
 
+    // Unico punto di invio dell'embed — solo canale.send, mai interaction.reply con embed
     if (config.canali.schedamenti) {
       const canale = await interaction.client.channels.fetch(config.canali.schedamenti).catch(() => null);
-      if (canale) await canale.send({ embeds: [embed] });
+      if (canale) {
+        console.log(`[SCHED] canale.send() — schedamento #${result.lastInsertRowid}`);
+        await canale.send({ embeds: [embed] });
+      } else {
+        console.warn(`[SCHED] Canale schedamenti non trovato (ID: ${config.canali.schedamenti})`);
+      }
+    } else {
+      console.warn('[SCHED] config.canali.schedamenti non configurato');
     }
+
+    // Unica risposta all'utente — sempre efimera, mai con embed
+    console.log(`[SCHED] interaction.reply() ephemeral — schedamento #${result.lastInsertRowid}`);
     await interaction.reply({ content: `📁 Schedamento #${result.lastInsertRowid} registrato con successo!`, ephemeral: true });
+
     await logBotLog(interaction.client, '📁 Nuovo Schedamento',
       `**${nome} ${cognome}** — Stato: ${stato} — Da: ${interaction.user.tag}`
     );
