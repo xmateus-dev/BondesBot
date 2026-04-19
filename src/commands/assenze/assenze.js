@@ -36,10 +36,15 @@ module.exports = {
     const chAssenze = config.canali.assenze;
     if (chAssenze) {
       const canale = await interaction.client.channels.fetch(chAssenze).catch(() => null);
-      if (canale) await canale.send({ embeds: [embed] });
+      if (canale) {
+        await canale.send({ embeds: [embed] });
+        await interaction.reply({ content: '🏖️ Assenza registrata con successo!', ephemeral: true });
+      } else {
+        await interaction.reply({ embeds: [embed] });
+      }
+    } else {
+      await interaction.reply({ embeds: [embed] });
     }
-
-    await interaction.reply({ embeds: [embed] });
     await logBotLog(interaction.client, '🏖️ Assenza Registrata',
       `**Membro:** ${interaction.user.tag} | **Dal:** ${dal} | **Al:** ${al}`
     );

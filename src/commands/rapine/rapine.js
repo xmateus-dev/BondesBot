@@ -54,10 +54,15 @@ module.exports = {
     const chRapine = config.canali.esitoRapine;
     if (chRapine) {
       const canale = await interaction.client.channels.fetch(chRapine).catch(() => null);
-      if (canale) await canale.send({ embeds: [embed] });
+      if (canale) {
+        await canale.send({ embeds: [embed] });
+        await interaction.reply({ content: `${esitoEmoji} Esito rapina registrato con successo!`, ephemeral: true });
+      } else {
+        await interaction.reply({ embeds: [embed] });
+      }
+    } else {
+      await interaction.reply({ embeds: [embed] });
     }
-
-    await interaction.reply({ embeds: [embed] });
     await logBotLog(interaction.client, `${esitoEmoji} Rapina Registrata`,
       `**Civico:** ${civico} | **Tipo:** ${tipo} | **Esito:** ${esito} | **Da:** ${interaction.user.tag}`
     );
