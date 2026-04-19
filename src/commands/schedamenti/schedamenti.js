@@ -77,7 +77,10 @@ module.exports = {
     // Invia l'embed pubblico solo tramite channel.send — mai tramite reply/followUp
     if (config.canali.schedamenti) {
       const canale = await interaction.client.channels.fetch(config.canali.schedamenti).catch(() => null);
-      if (canale) await canale.send({ embeds: [embed] });
+      if (canale) {
+        console.log(`[SCHED] canale.send — PID:${process.pid} interaction:${interaction.id} schedamento:#${result.lastInsertRowid}`);
+        await canale.send({ embeds: [embed] });
+      }
     }
 
     // Cancella il defer efimero: nessun messaggio visibile nel canale
