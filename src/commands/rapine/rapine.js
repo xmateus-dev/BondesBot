@@ -11,7 +11,14 @@ module.exports = {
     .setName('rapine')
     .setDescription('Registra un esito rapina')
     .addStringOption(o => o.setName('civico').setDescription('Civico/Indirizzo del target').setRequired(true))
-    .addStringOption(o => o.setName('tipo').setDescription('Tipo di rapina').setRequired(true))
+    .addStringOption(o => o.setName('tipo').setDescription('Tipo di rapina').setRequired(true)
+      .addChoices(
+        { name: 'Negozietto', value: 'Negozietto' },
+        { name: 'Fleeca', value: 'Fleeca' },
+        { name: 'Atm', value: 'Atm' },
+        { name: 'Pacific', value: 'Pacific' },
+        { name: 'Gabriela', value: 'Gabriela' }
+      ))
     .addStringOption(o => o.setName('esito').setDescription('Esito dell\'operazione').setRequired(true)
       .addChoices(
         { name: '✅ Positivo', value: 'positivo' },

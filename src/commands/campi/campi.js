@@ -10,7 +10,14 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('campi')
     .setDescription('Registra un esito campo')
-    .addStringOption(o => o.setName('campo').setDescription('Nome del campo').setRequired(true))
+    .addStringOption(o => o.setName('campo').setDescription('Nome del campo').setRequired(true)
+      .addChoices(
+        { name: 'Marijuana', value: 'Marijuana' },
+        { name: 'Cocaina', value: 'Cocaina' },
+        { name: 'Eroina', value: 'Eroina' },
+        { name: 'Lssd', value: 'Lssd' },
+        { name: 'Meth', value: 'Meth' }
+      ))
     .addStringOption(o => o.setName('attivita').setDescription('Tipo di attività').setRequired(true)
       .addChoices(
         { name: '🌾 Raccolta', value: 'raccolta' },
