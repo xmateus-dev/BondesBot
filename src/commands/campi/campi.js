@@ -56,18 +56,11 @@ module.exports = {
         { name: '👤 Compilato da', value: `${interaction.member}`, inline: true }
       );
 
-    const chCampi = config.canali.esitoCampi;
-    if (chCampi) {
-      const canale = await interaction.client.channels.fetch(chCampi).catch(() => null);
-      if (canale) {
-        await canale.send({ embeds: [embed] });
-        await interaction.reply({ content: `${esitoEmoji} Esito campo registrato con successo!`, ephemeral: true });
-      } else {
-        await interaction.reply({ embeds: [embed] });
-      }
-    } else {
-      await interaction.reply({ embeds: [embed] });
+    if (config.canali.esitoCampi) {
+      const canale = await interaction.client.channels.fetch(config.canali.esitoCampi).catch(() => null);
+      if (canale) await canale.send({ embeds: [embed] });
     }
+    await interaction.reply({ content: `${esitoEmoji} Esito campo registrato con successo!`, ephemeral: true });
     await logBotLog(interaction.client, `${esitoEmoji} Campo Registrato`,
       `**Campo:** ${campo} | **Attività:** ${attivita} | **Esito:** ${esito} | **Da:** ${interaction.user.tag}`
     );

@@ -71,18 +71,11 @@ module.exports = {
         { name: '👤 Schedato da', value: `${interaction.member}`, inline: true }
       );
 
-    const chSched = config.canali.schedamenti;
-    if (chSched) {
-      const canale = await interaction.client.channels.fetch(chSched).catch(() => null);
-      if (canale) {
-        await canale.send({ embeds: [embed] });
-        await interaction.reply({ content: `📁 Schedamento #${result.lastInsertRowid} registrato con successo!`, ephemeral: true });
-      } else {
-        await interaction.reply({ embeds: [embed] });
-      }
-    } else {
-      await interaction.reply({ embeds: [embed] });
+    if (config.canali.schedamenti) {
+      const canale = await interaction.client.channels.fetch(config.canali.schedamenti).catch(() => null);
+      if (canale) await canale.send({ embeds: [embed] });
     }
+    await interaction.reply({ content: `📁 Schedamento #${result.lastInsertRowid} registrato con successo!`, ephemeral: true });
     await logBotLog(interaction.client, '📁 Nuovo Schedamento',
       `**${nome} ${cognome}** — Stato: ${stato} — Da: ${interaction.user.tag}`
     );

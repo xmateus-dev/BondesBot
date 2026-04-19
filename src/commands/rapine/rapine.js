@@ -51,18 +51,11 @@ module.exports = {
         { name: '👤 Compilato da', value: `${interaction.member}`, inline: true }
       );
 
-    const chRapine = config.canali.esitoRapine;
-    if (chRapine) {
-      const canale = await interaction.client.channels.fetch(chRapine).catch(() => null);
-      if (canale) {
-        await canale.send({ embeds: [embed] });
-        await interaction.reply({ content: `${esitoEmoji} Esito rapina registrato con successo!`, ephemeral: true });
-      } else {
-        await interaction.reply({ embeds: [embed] });
-      }
-    } else {
-      await interaction.reply({ embeds: [embed] });
+    if (config.canali.esitoRapine) {
+      const canale = await interaction.client.channels.fetch(config.canali.esitoRapine).catch(() => null);
+      if (canale) await canale.send({ embeds: [embed] });
     }
+    await interaction.reply({ content: `${esitoEmoji} Esito rapina registrato con successo!`, ephemeral: true });
     await logBotLog(interaction.client, `${esitoEmoji} Rapina Registrata`,
       `**Civico:** ${civico} | **Tipo:** ${tipo} | **Esito:** ${esito} | **Da:** ${interaction.user.tag}`
     );
